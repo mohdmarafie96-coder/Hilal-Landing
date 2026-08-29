@@ -236,6 +236,42 @@
   .summary-row span:first-child{color:var(--thread);}
   .summary-row.total{border-top:1px solid var(--thread-light);margin-top:6px;padding-top:14px;font-weight:700;font-size:16px;color:var(--navy);}
 
+  .order-number-box{
+    margin-top:20px;background:var(--royal-tint);border-radius:var(--radius);
+    padding:18px 20px;display:flex;flex-direction:column;gap:4px;max-width:320px;margin-inline:auto;
+  }
+  .order-number-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--thread);}
+  .order-number-value{font-family:var(--font-mono);font-size:24px;font-weight:700;color:var(--navy);letter-spacing:.02em;}
+
+  /* Track order */
+  .track{padding-block:84px;background:var(--white);border-top:1px solid var(--thread-light);}
+  .track-top{max-width:560px;margin-bottom:32px;}
+  .track-top p{color:var(--thread);margin-top:8px;}
+  .track-form{display:flex;gap:12px;flex-wrap:wrap;max-width:640px;}
+  .track-form input{
+    flex:1;min-width:200px;padding:14px 16px;border:1.5px solid var(--thread-light);border-radius:var(--radius);
+    font-family:var(--font-body);font-size:15px;color:var(--navy-ink);background:var(--paper);
+  }
+  .track-form input:focus{outline:none;border-color:var(--royal);}
+  .track-form .btn{flex-shrink:0;}
+  .track-error{margin-top:16px;color:#B4413C;font-size:14px;max-width:520px;}
+  .track-result{margin-top:40px;max-width:640px;}
+  .track-steps{display:flex;justify-content:space-between;position:relative;}
+  .track-steps::before{
+    content:'';position:absolute;top:9px;left:9px;right:9px;height:2px;background:var(--thread-light);z-index:0;
+  }
+  .track-step{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;z-index:1;flex:1;}
+  .track-dot{width:20px;height:20px;border-radius:50%;background:var(--white);border:2px solid var(--thread-light);}
+  .track-step-label{font-family:var(--font-mono);font-size:12px;color:var(--thread);text-align:center;letter-spacing:.02em;}
+  .track-step.is-done .track-dot{background:var(--royal);border-color:var(--royal);}
+  .track-step.is-done .track-step-label{color:var(--navy);font-weight:600;}
+  .track-step.is-current .track-dot{background:var(--white);border-color:var(--royal);box-shadow:0 0 0 4px var(--royal-tint);}
+  .track-step.is-current .track-step-label{color:var(--royal);font-weight:700;}
+  .track-updated{margin-top:20px;font-family:var(--font-mono);font-size:13px;color:var(--thread);}
+  @media (max-width:560px){
+    .track-step-label{font-size:10px;}
+  }
+
   .color-picker{display:flex;gap:10px;}
   .color-chip{
     flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
@@ -321,6 +357,7 @@
       <a href="#colors" data-en="Colors" data-ar="الألوان">Colors</a>
       <a href="#sizing" data-en="Sizing" data-ar="المقاسات">Sizing</a>
       <a href="#faq" data-en="FAQ" data-ar="الأسئلة الشائعة">FAQ</a>
+      <a href="#track" data-en="Track Order" data-ar="تابع طلبك">Track Order</a>
     </nav>
     <div class="nav-actions">
       <button class="lang-toggle" id="langToggle" type="button">عربي</button>
@@ -862,9 +899,54 @@
         <div class="preorder-success" id="preorderSuccess" hidden>
           <h3 data-en="Thank you" data-ar="شكرًا لك">Thank you</h3>
           <p data-en="We've received your order details. A confirmation has been sent to your email." data-ar="استلمنا تفاصيل طلبك. تم إرسال تأكيد إلى بريدك الإلكتروني.">We've received your order details. A confirmation has been sent to your email.</p>
+          <div class="order-number-box">
+            <span class="order-number-label" data-en="Your order number" data-ar="رقم طلبك">Your order number</span>
+            <span class="order-number-value" id="orderNumberValue">HL-000000</span>
+          </div>
+          <p class="form-note" data-en="Save this number — you'll need it to check your order status." data-ar="احتفظ بهذا الرقم — ستحتاجه لمتابعة حالة طلبك.">Save this number — you'll need it to check your order status.</p>
           <div class="order-summary" id="orderSummary"></div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="track reveal" id="track">
+  <div class="section-inner">
+    <div class="track-top">
+      <p class="section-tag" data-en="Order status" data-ar="حالة الطلب">Order status</p>
+      <h2 data-en="Track your order" data-ar="تابع حالة طلبك">Track your order</h2>
+      <p data-en="Enter your order number and mobile number to see where your order is." data-ar="أدخل رقم طلبك ورقم جوالك لمعرفة حالة طلبك.">Enter your order number and mobile number to see where your order is.</p>
+    </div>
+
+    <form class="track-form" id="trackForm" novalidate>
+      <input type="text" id="trackOrderNumber" placeholder="HL-000000" data-en-ph="e.g. HL-000000" data-ar-ph="مثال: HL-000000" required>
+      <input type="tel" id="trackMobile" data-en-ph="Mobile number used at checkout" data-ar-ph="رقم الجوال المستخدم عند الطلب" placeholder="Mobile number used at checkout" required>
+      <button type="submit" class="btn btn-primary" data-en="Check status" data-ar="تحقق من الحالة">Check status</button>
+    </form>
+
+    <p class="track-error" id="trackError" hidden data-en="We couldn't find an order with those details. Double-check your order number and mobile, or message us on WhatsApp." data-ar="لم نتمكن من العثور على طلب بهذه التفاصيل. تحقق من رقم الطلب والجوال، أو راسلنا على واتساب.">We couldn't find an order with those details. Double-check your order number and mobile, or message us on WhatsApp.</p>
+
+    <div class="track-result" id="trackResult" hidden>
+      <div class="track-steps" id="trackSteps">
+        <div class="track-step" data-stage="received">
+          <span class="track-dot"></span>
+          <span class="track-step-label" data-en="Received" data-ar="تم الاستلام">Received</span>
+        </div>
+        <div class="track-step" data-stage="confirmed">
+          <span class="track-dot"></span>
+          <span class="track-step-label" data-en="Confirmed" data-ar="تم التأكيد">Confirmed</span>
+        </div>
+        <div class="track-step" data-stage="production">
+          <span class="track-dot"></span>
+          <span class="track-step-label" data-en="In production" data-ar="قيد التصنيع">In production</span>
+        </div>
+        <div class="track-step" data-stage="shipped">
+          <span class="track-dot"></span>
+          <span class="track-step-label" data-en="Shipped" data-ar="تم الشحن">Shipped</span>
+        </div>
+      </div>
+      <p class="track-updated" id="trackUpdated"></p>
     </div>
   </div>
 </section>
@@ -1050,6 +1132,15 @@
   const form = document.getElementById('preorderForm');
   const success = document.getElementById('preorderSuccess');
   const orderSummary = document.getElementById('orderSummary');
+  const orderNumberValue = document.getElementById('orderNumberValue');
+
+  function generateOrderNumber(){
+    // e.g. HL-4F9K21 — short, unique enough for a small pre-order batch, easy to read back over WhatsApp
+    const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ'; // no O/I to avoid confusion with 0/1
+    let code = '';
+    for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+    return 'HL-' + code;
+  }
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -1058,8 +1149,11 @@
     const colorLabel = colorLabels[colorValueInput.value] || colorValueInput.value;
     const fitLabel = fitValueInput.value === 'male' ? 'Male' : 'Female';
     const pantLengthLabel = pantLengthValueInput.value === 'tall' ? 'Tall' : 'Regular';
+    const orderNumber = generateOrderNumber();
 
     const payload = {
+      orderNumber: orderNumber,
+      status: 'received',
       timestamp: new Date().toISOString(),
       name: document.getElementById('name').value,
       email: document.getElementById('email').value,
@@ -1073,6 +1167,7 @@
 
     function showSuccess(){
       const sizingRows = '<div class="summary-row"><span>Size</span><span>' + payload.size + '</span></div>';
+      orderNumberValue.textContent = orderNumber;
       orderSummary.innerHTML =
         '<div class="summary-row"><span>Color</span><span>' + colorLabel + '</span></div>' +
         '<div class="summary-row"><span>Fit</span><span>' + fitLabel + '</span></div>' +
@@ -1099,6 +1194,95 @@
       body: JSON.stringify(payload)
     }).then(showSuccess).catch(showSuccess);
   });
+
+  // --- Track order: reads status back from the same Google Sheet via a JSONP-style request.
+  // Apps Script web apps don't send CORS headers, so a normal fetch can't read the response —
+  // JSONP (a <script> tag hitting the endpoint with a callback param) sidesteps that entirely. ---
+  const TRACK_ENDPOINT_URL = SHEET_ENDPOINT_URL;
+  const trackForm = document.getElementById('trackForm');
+  const trackError = document.getElementById('trackError');
+  const trackResult = document.getElementById('trackResult');
+  const trackUpdated = document.getElementById('trackUpdated');
+  const STAGE_ORDER = ['received', 'confirmed', 'production', 'shipped'];
+
+  function jsonpRequest(url, params, callbackName){
+    return new Promise(function(resolve, reject){
+      const script = document.createElement('script');
+      const timeout = setTimeout(function(){
+        cleanup();
+        reject(new Error('timeout'));
+      }, 8000);
+
+      window[callbackName] = function(data){
+        clearTimeout(timeout);
+        cleanup();
+        resolve(data);
+      };
+
+      function cleanup(){
+        delete window[callbackName];
+        script.remove();
+      }
+
+      const query = Object.keys(params).map(function(k){
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      }).join('&');
+      script.src = url + '?' + query + '&callback=' + callbackName;
+      script.onerror = function(){ clearTimeout(timeout); cleanup(); reject(new Error('network')); };
+      document.body.appendChild(script);
+    });
+  }
+
+  function renderTrackResult(data){
+    const stage = (data && data.status || '').toLowerCase();
+    const stageIndex = STAGE_ORDER.indexOf(stage);
+
+    document.querySelectorAll('.track-step').forEach(function(stepEl){
+      const thisIndex = STAGE_ORDER.indexOf(stepEl.dataset.stage);
+      stepEl.classList.remove('is-done', 'is-current');
+      if(stageIndex === -1) return;
+      if(thisIndex < stageIndex) stepEl.classList.add('is-done');
+      else if(thisIndex === stageIndex) stepEl.classList.add('is-current');
+    });
+
+    trackUpdated.textContent = data && data.updatedAt
+      ? 'Last updated: ' + new Date(data.updatedAt).toLocaleDateString()
+      : '';
+
+    trackError.hidden = true;
+    trackResult.hidden = false;
+  }
+
+  if(trackForm){
+    trackForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      trackError.hidden = true;
+      trackResult.hidden = true;
+
+      const orderNumber = document.getElementById('trackOrderNumber').value.trim().toUpperCase();
+      const mobile = document.getElementById('trackMobile').value.trim();
+
+      if(TRACK_ENDPOINT_URL.indexOf('PASTE_YOUR') !== -1){
+        console.warn('Hilal: TRACK_ENDPOINT_URL is not set.');
+        trackError.hidden = false;
+        return;
+      }
+
+      jsonpRequest(TRACK_ENDPOINT_URL, { orderNumber: orderNumber, mobile: mobile }, 'hilalTrackCallback_' + Date.now())
+        .then(function(data){
+          if(!data || data.found === false){
+            trackError.hidden = false;
+            trackResult.hidden = true;
+          } else {
+            renderTrackResult(data);
+          }
+        })
+        .catch(function(){
+          trackError.hidden = false;
+          trackResult.hidden = true;
+        });
+    });
+  }
 </script>
 </body>
 </html>
